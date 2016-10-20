@@ -397,7 +397,9 @@ class DB_mysqli extends DB_common
             }
             $this->transaction_opcount++;
         }
-        $result = @mysqli_query($this->connection, $query);
+        // Added MYSQLI_STORE_RESULT_COPY_DATA as memory usage was very high on queries fetching 100,000+ rows
+        //      Took test from 240MB to 3.5MB. Should reduce memory usage overall but slightly slow queries with few results
+        $result = @mysqli_query($this->connection, $query, MYSQLI_STORE_RESULT_COPY_DATA);
         if (!$result) {
             return $this->mysqliRaiseError();
         }
